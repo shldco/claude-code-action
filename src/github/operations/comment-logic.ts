@@ -171,11 +171,17 @@ export function updateCommentBody(input: CommentUpdateInput): string {
     }
   }
 
-  // Add PR link (either from content or provided)
-  const prUrl =
-    prLinkFromContent || (prLink ? prLink.match(/\(([^)]+)\)/)?.[1] : "");
-  if (prUrl) {
-    links += ` • [Create PR ➔](${prUrl})`;
+  // Add PR link (either from content or provided), but skip if an actual PR was already created
+  // Check if the body contains an actual PR URL (e.g., /pull/123) — if so, no need for a "Create PR" header link
+  const actualPrUrlInBody = bodyContent.match(
+    /https:\/\/github\.com\/[^\/]+\/[^\/]+\/pull\/\d+/,
+  );
+  if (!actualPrUrlInBody) {
+    const prUrl =
+      prLinkFromContent || (prLink ? prLink.match(/\(([^)]+)\)/)?.[1] : "");
+    if (prUrl) {
+      links += ` • [Create PR ➔](${prUrl})`;
+    }
   }
 
   // Build the new body with blank line between header and separator

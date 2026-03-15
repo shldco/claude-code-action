@@ -122,12 +122,16 @@ export async function updateCommentLink(
   let prLink = "";
   // If claudeBranch is set, it means we created a new branch (for issues or closed/merged PRs)
   if (claudeBranch && !shouldDeleteBranch) {
-    // Check if comment already contains a PR URL
+    // Check if comment already contains a PR URL (compare link or actual PR link)
     const serverUrlPattern = serverUrl.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
     const prUrlPattern = new RegExp(
       `${serverUrlPattern}\\/.+\\/compare\\/${baseBranch.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\.\\.\\.`,
     );
-    const containsPRUrl = currentBody.match(prUrlPattern);
+    const actualPrUrlPattern = new RegExp(
+      `${serverUrlPattern}\\/.+\\/pull\\/\\d+`,
+    );
+    const containsPRUrl =
+      currentBody.match(prUrlPattern) || currentBody.match(actualPrUrlPattern);
 
     if (!containsPRUrl) {
       // Check if there are changes to the branch compared to the default branch

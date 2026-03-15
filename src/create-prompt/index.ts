@@ -587,8 +587,10 @@ ${
 When done with changes, create a pull request using the gh CLI:
 - Run: gh pr create --base ${eventData.baseBranch} --head ${eventData.claudeBranch} --title "<title>" --body "<body>"
 - The title should be a concise conventional commit style summary (e.g., "feat: add user auth flow")
-- The body should include:
-  - A clear description of the changes
+- IMPORTANT: The PR body should be comprehensive — reuse the content from your issue comment (completed task checklist, reasoning, decisions, and summary) so that reviewers see the full picture directly in the PR without needing to check the issue. Specifically include:
+  - The completed task checklist showing what was done
+  - Key decisions and reasoning (e.g., why certain approaches were chosen)
+  - A summary of all changes made
   - Reference to the original ${eventData.isPR ? "PR" : "issue"} (e.g., "Closes #<number>" or "Relates to #<number>")
   - The signature: "Generated with [Claude Code](https://claude.ai/code)"
 - Include the PR URL in your final comment update.`
@@ -778,8 +780,10 @@ ${eventData.eventName === "issue_comment" || eventData.eventName === "pull_reque
           ? `- After pushing all changes, create a pull request using the gh CLI:
         - Run: gh pr create --base ${eventData.baseBranch} --head ${eventData.claudeBranch} --title "<title>" --body "<body>"
         - The title should be a concise conventional commit style summary (e.g., "feat: add user auth flow")
-        - The body should include:
-          - A clear description of the changes
+        - IMPORTANT: The PR body should be comprehensive — reuse the content from your issue comment (completed task checklist, reasoning, decisions, and summary) so that reviewers see the full picture directly in the PR without needing to check the issue. Specifically include:
+          - The completed task checklist showing what was done
+          - Key decisions and reasoning (e.g., why certain approaches were chosen)
+          - A summary of all changes made
           - Reference to the original ${eventData.isPR ? "PR" : "issue"} (e.g., "Closes #<number>" or "Relates to #<number>")
           - The signature: "Generated with [Claude Code](https://claude.ai/code)"
         - Include the resulting PR URL in your final comment update.`
