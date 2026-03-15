@@ -112,6 +112,15 @@ export function checkContainsTrigger(context: ParsedGitHubContext): boolean {
       );
       return true;
     }
+
+    // Trigger on any review for branches created by Claude (claude/* prefix)
+    const headRef = (context.payload as any).pull_request?.head?.ref || "";
+    if (headRef.startsWith("claude/")) {
+      console.log(
+        `Pull request review on Claude branch '${headRef}', triggering`,
+      );
+      return true;
+    }
   }
 
   // Check for comment trigger
@@ -129,6 +138,15 @@ export function checkContainsTrigger(context: ParsedGitHubContext): boolean {
     if (regex.test(commentBody)) {
       console.log(`Comment contains exact trigger phrase '${triggerPhrase}'`);
       return true;
+    }
+
+    // Trigger on any review comment for branches created by Claude (claude/* prefix)
+    if (isPullRequestReviewCommentEvent(context)) {
+      const headRef = (context.payload as any).pull_request?.head?.ref || "";
+      if (headRef.startsWith("claude/")) {
+        console.log(`Review comment on Claude branch '${headRef}', triggering`);
+        return true;
+      }
     }
   }
 
