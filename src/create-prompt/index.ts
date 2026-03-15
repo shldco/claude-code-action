@@ -584,9 +584,14 @@ ${getCommitInstructions(eventData, githubData, context, useCommitSigning)}
 ${
   eventData.claudeBranch
     ? `
-When done with changes, provide a PR link:
-[Create a PR](${GITHUB_SERVER_URL}/${context.repository}/compare/${eventData.baseBranch}...${eventData.claudeBranch}?quick_pull=1&title=<url-encoded-title>&body=<url-encoded-body>)
-Use THREE dots (...) between branches. URL-encode all parameters.`
+When done with changes, create a pull request using the gh CLI:
+- Run: gh pr create --base ${eventData.baseBranch} --head ${eventData.claudeBranch} --title "<title>" --body "<body>"
+- The title should be a concise conventional commit style summary (e.g., "feat: add user auth flow")
+- The body should include:
+  - A clear description of the changes
+  - Reference to the original ${eventData.isPR ? "PR" : "issue"} (e.g., "Closes #<number>" or "Relates to #<number>")
+  - The signature: "Generated with [Claude Code](https://claude.ai/code)"
+- Include the PR URL in your final comment update.`
     : ""
 }
 
@@ -770,20 +775,14 @@ ${eventData.eventName === "issue_comment" || eventData.eventName === "pull_reque
       - Mark each subtask as completed as you progress.${getCommitInstructions(eventData, githubData, context, useCommitSigning)}
       ${
         eventData.claudeBranch
-          ? `- Provide a URL to create a PR manually in this format:
-        [Create a PR](${GITHUB_SERVER_URL}/${context.repository}/compare/${eventData.baseBranch}...<branch-name>?quick_pull=1&title=<url-encoded-title>&body=<url-encoded-body>)
-        - IMPORTANT: Use THREE dots (...) between branch names, not two (..)
-          Example: ${GITHUB_SERVER_URL}/${context.repository}/compare/main...feature-branch (correct)
-          NOT: ${GITHUB_SERVER_URL}/${context.repository}/compare/main..feature-branch (incorrect)
-        - IMPORTANT: Ensure all URL parameters are properly encoded - spaces should be encoded as %20, not left as spaces
-          Example: Instead of "fix: update welcome message", use "fix%3A%20update%20welcome%20message"
-        - The target-branch should be '${eventData.baseBranch}'.
-        - The branch-name is the current branch: ${eventData.claudeBranch}
+          ? `- After pushing all changes, create a pull request using the gh CLI:
+        - Run: gh pr create --base ${eventData.baseBranch} --head ${eventData.claudeBranch} --title "<title>" --body "<body>"
+        - The title should be a concise conventional commit style summary (e.g., "feat: add user auth flow")
         - The body should include:
           - A clear description of the changes
-          - Reference to the original ${eventData.isPR ? "PR" : "issue"}
+          - Reference to the original ${eventData.isPR ? "PR" : "issue"} (e.g., "Closes #<number>" or "Relates to #<number>")
           - The signature: "Generated with [Claude Code](https://claude.ai/code)"
-        - Just include the markdown link with text "Create a PR" - do not add explanatory text before it like "You can create a PR using this link"`
+        - Include the resulting PR URL in your final comment update.`
           : ""
       }
 
@@ -801,7 +800,7 @@ ${eventData.eventName === "issue_comment" || eventData.eventName === "pull_reque
    - When all todos are completed, remove the spinner and add a brief summary of what was accomplished, and what was not done.
    - Note: If you see previous Claude comments with headers like "**Claude finished @user's task**" followed by "---", do not include this in your comment. The system adds this automatically.
    - If you changed any files locally, you must update them in the remote branch via ${useCommitSigning ? "mcp__github_file_ops__commit_files" : "git commands (add, commit, push)"} before saying that you're done.
-   ${eventData.claudeBranch ? `- If you created anything in your branch, your comment must include the PR URL with prefilled title and body mentioned above.` : ""}
+   ${eventData.claudeBranch ? `- If you created anything in your branch, you must create a pull request using gh pr create and include the resulting PR URL in your comment.` : ""}
 
 Important Notes:
 - All communication must happen through GitHub PR comments.
@@ -844,7 +843,6 @@ What You CAN Do:
   - When triggered on a closed PR: Create a new branch
 
 What You CANNOT Do:
-- Submit formal GitHub PR reviews
 - Approve pull requests (for security reasons)
 - Post multiple comments (you only update your initial comment)
 - Execute commands outside the repository context${useCommitSigning ? "\n- Run arbitrary Bash commands (unless explicitly allowed via allowed_tools configuration)" : ""}

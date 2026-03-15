@@ -198,10 +198,7 @@ describe("generatePrompt", () => {
     expect(prompt).toContain(
       "<trigger_context>new issue with '@claude' in body</trigger_context>",
     );
-    expect(prompt).toContain(
-      "[Create a PR](https://github.com/owner/repo/compare/main",
-    );
-    expect(prompt).toContain("The target-branch should be 'main'");
+    expect(prompt).toContain("gh pr create --base main --head");
   });
 
   test("should generate prompt for issue assigned event", async () => {
@@ -226,9 +223,7 @@ describe("generatePrompt", () => {
     expect(prompt).toContain(
       "<trigger_context>issue assigned to 'claude-bot'</trigger_context>",
     );
-    expect(prompt).toContain(
-      "[Create a PR](https://github.com/owner/repo/compare/develop",
-    );
+    expect(prompt).toContain("gh pr create --base develop --head");
   });
 
   test("should generate prompt for issue labeled event", async () => {
@@ -253,9 +248,7 @@ describe("generatePrompt", () => {
     expect(prompt).toContain(
       "<trigger_context>issue labeled with 'claude-task'</trigger_context>",
     );
-    expect(prompt).toContain(
-      "[Create a PR](https://github.com/owner/repo/compare/main",
-    );
+    expect(prompt).toContain("gh pr create --base main --head");
   });
 
   // Removed test - direct_prompt field no longer supported in v1.0
@@ -519,7 +512,7 @@ describe("generatePrompt", () => {
     expect(prompt).not.toContain(
       "IMPORTANT: You are already on the correct branch (",
     );
-    expect(prompt).not.toContain("Create a PR](https://github.com/");
+    expect(prompt).not.toContain("gh pr create --base");
   });
 
   test("should include Issue-specific instructions only for Issue events", async () => {
@@ -546,9 +539,9 @@ describe("generatePrompt", () => {
     expect(prompt).toContain(
       "IMPORTANT: You are already on the correct branch (claude/issue-789-20240101-1200)",
     );
-    expect(prompt).toContain("Create a PR](https://github.com/");
+    expect(prompt).toContain("gh pr create --base");
     expect(prompt).toContain(
-      "If you created anything in your branch, your comment must include the PR URL",
+      "If you created anything in your branch, you must create a pull request using gh pr create",
     );
 
     // Should NOT contain PR-specific instructions
@@ -586,7 +579,7 @@ describe("generatePrompt", () => {
       "IMPORTANT: You are already on the correct branch (claude/issue-123-20240101-1200)",
     );
     expect(prompt).toContain(
-      "The branch-name is the current branch: claude/issue-123-20240101-1200",
+      "gh pr create --base main --head claude/issue-123-20240101-1200",
     );
   });
 
@@ -612,15 +605,13 @@ describe("generatePrompt", () => {
     expect(prompt).toContain(
       "You are already on the correct branch (claude/pr-456-20240101-1200)",
     );
+    expect(prompt).toContain("gh pr create --base main --head");
     expect(prompt).toContain(
-      "Create a PR](https://github.com/owner/repo/compare/main",
-    );
-    expect(prompt).toContain(
-      "The branch-name is the current branch: claude/pr-456-20240101-1200",
+      "gh pr create --base main --head claude/pr-456-20240101-1200",
     );
     expect(prompt).toContain("Reference to the original PR");
     expect(prompt).toContain(
-      "If you created anything in your branch, your comment must include the PR URL",
+      "If you created anything in your branch, you must create a pull request using gh pr create",
     );
 
     // Should NOT contain open PR instructions
@@ -653,10 +644,10 @@ describe("generatePrompt", () => {
     );
 
     // Should NOT contain new branch instructions
-    expect(prompt).not.toContain("Create a PR](https://github.com/");
+    expect(prompt).not.toContain("gh pr create --base");
     expect(prompt).not.toContain("You are already on the correct branch");
     expect(prompt).not.toContain(
-      "If you created anything in your branch, your comment must include the PR URL",
+      "If you created anything in your branch, you must create a pull request using gh pr create",
     );
   });
 
@@ -681,9 +672,7 @@ describe("generatePrompt", () => {
     expect(prompt).toContain(
       "You are already on the correct branch (claude/pr-789-20240101-1230)",
     );
-    expect(prompt).toContain(
-      "Create a PR](https://github.com/owner/repo/compare/develop",
-    );
+    expect(prompt).toContain("gh pr create --base develop --head");
     expect(prompt).toContain("Reference to the original PR");
   });
 
@@ -709,10 +698,10 @@ describe("generatePrompt", () => {
     expect(prompt).toContain(
       "You are already on the correct branch (claude/pr-999-20240101-1400)",
     );
-    expect(prompt).toContain("Create a PR](https://github.com/");
+    expect(prompt).toContain("gh pr create --base");
     expect(prompt).toContain("Reference to the original PR");
     expect(prompt).toContain(
-      "If you created anything in your branch, your comment must include the PR URL",
+      "If you created anything in your branch, you must create a pull request using gh pr create",
     );
   });
 
@@ -737,7 +726,7 @@ describe("generatePrompt", () => {
     expect(prompt).toContain(
       "You are already on the correct branch (claude/pr-555-20240101-1500)",
     );
-    expect(prompt).toContain("Create a PR](https://github.com/");
+    expect(prompt).toContain("gh pr create --base");
     expect(prompt).toContain("Reference to the original PR");
   });
 

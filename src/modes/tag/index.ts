@@ -143,12 +143,14 @@ export async function prepareTagMode({
       "Bash(git diff:*)",
       "Bash(git log:*)",
       "Bash(git rm:*)",
+      "Bash(gh pr create:*)",
     );
   } else {
     // When using API commit signing, use MCP file ops tools
     tagModeTools.push(
       "mcp__github_file_ops__commit_files",
       "mcp__github_file_ops__delete_files",
+      "Bash(gh pr create:*)",
     );
   }
 
