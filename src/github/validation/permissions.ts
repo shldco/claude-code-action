@@ -44,8 +44,13 @@ export async function checkWritePermissions(
     }
 
     // Check if the actor is a GitHub App (bot user)
-    if (actor.endsWith("[bot]")) {
-      core.info(`Actor is a GitHub App: ${actor}`);
+    // Note: Some GitHub bots like "Copilot" don't follow the "[bot]" suffix convention
+    const knownBotActors = ["copilot"];
+    if (
+      actor.endsWith("[bot]") ||
+      knownBotActors.includes(actor.toLowerCase())
+    ) {
+      core.info(`Actor is a bot: ${actor}`);
       return true;
     }
 

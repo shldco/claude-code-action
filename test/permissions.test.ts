@@ -299,7 +299,7 @@ describe("checkWritePermissions", () => {
 
       expect(result).toBe(true);
       expect(coreInfoSpy).toHaveBeenCalledWith(
-        "Actor is a GitHub App: test-bot[bot]",
+        "Actor is a bot: test-bot[bot]",
       );
     });
   });
